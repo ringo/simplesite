@@ -21,13 +21,13 @@ exports.index = function (req, path) {
     }
 
     if (fs.isDirectory(absolutePath)) {
+        if (!strings.endsWith(uriPath, "/")) {
+            throw {redirect: uriPath + "/"};
+        }
         for each(var name in welcomePages) {
             if (fs.isFile(fs.join(absolutePath, name))) {
                 return serveFile(fs.join(absolutePath, name));
             }
-        }
-        if (!strings.endsWith(uriPath, "/")) {
-            throw {redirect: uriPath + "/"};
         }
         return listFiles(absolutePath, uriPath);
     }
