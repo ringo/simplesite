@@ -7,12 +7,17 @@ var numbers = require('ringo/utils/numbers');
 var log = require('ringo/logging').getLogger(module.id);
 
 var config = require("./config");
-var root = fs.absolute(config.root);
+var root = fs.canonical(config.root);
 var welcomePages = ["index.html","index.md"];
 
 exports.index = function (req, path) {
     var uriPath = files.resolveUri(req.rootPath, path);
-    var absolutePath = fs.join(root, path);
+
+    // better be safe - make sure path is contained in root
+    var absolutePath = fs.canonical(fs.join(root, path));
+    if (absolutePath.indexOf(root) != 0) {
+        throw {notfound:true};
+    }
 
     checkRequest(uriPath);
 
