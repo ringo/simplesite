@@ -1,18 +1,13 @@
 <% extends skins/base.html %>
 
 <% subskin content %>
-
-<h1> <%title%> </h1>
-
-<a href="../"> <%parent%>  </a> 
-
-
+<table border="0">
+<tr><td colspan="3"><a href="../"><%parent%></a></td></tr>
 <% for file in <% files %> render 'filePost' %>
+</table>
 
 <% subskin 'filePost' %>
-    <div>
-		<p>
-        <a href="<%file.path%>"> <%file.name%></a>
-         [<%file.size%>] [<%file.lastModified |dateFormat "yyyy-MM-dd"%>]
-        <p>
-    </div>
+<tr>
+    <td><a href="<%file.path%>"> <%file.name%></a></td>
+    <td align="right">[<%file.size%>]</td><td>[<%file.lastModified |dateFormat "yyyy-MM-dd HH:mm"%>]</td>
+</tr>
