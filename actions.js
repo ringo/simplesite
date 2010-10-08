@@ -6,7 +6,8 @@ var strings = require('ringo/utils/strings');
 var numbers = require('ringo/utils/numbers');
 var log = require('ringo/logging').getLogger(module.id);
 
-var root = fs.absolute(require("./config").root);
+var config = require("./config");
+var root = fs.absolute(config.root);
 var welcomePages = ["index.html","index.md"];
 
 exports.index = function (req, path) {
@@ -61,14 +62,30 @@ function listFiles(absolutePath, uriPath) {
     });
 }
 
-function serveFile(absolutePath) {
-    if (fs.extension(absolutePath) == ".md") {
-        var html = md.Markdown().process(fs.read(absolutePath));
-        return Response.skin(module.resolve('skins/page.html'), {
-            content: html,
-        });
+function serveFile(file) {
+    if (fs.extension(file) == ".md") {
+        var context = {
+            content: renderMarkdown(file)
+        };
+        readIncludes(config.includes, file, context);
+        return Response.skin(module.resolve('skins/page.html'), context);
     }
-    return Response.static(absolutePath);
+    return Response.static(file);
+}
+
+function renderMarkdown(file) {
+    return md.Markdown().process(fs.read(file));
+}
+
+function readIncludes(includes, file, context) {
+    for each (var inc in includes) {
+        var include = fs.resolve(file, inc);
+        if (fs.isFile(include)) {
+            var ext = fs.extension(include);
+            context[fs.base(include, ext)] = (ext == ".md") ?
+                    renderMarkdown(include) : fs.read(include);
+        }
+    }
 }
 
 function checkRequest(request) {
