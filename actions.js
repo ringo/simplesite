@@ -25,8 +25,9 @@ exports.index = function (req, path) {
             throw {redirect: uriPath + "/"};
         }
         for each(var name in welcomePages) {
-            if (fs.isFile(fs.join(absolutePath, name))) {
-                return serveFile(fs.join(absolutePath, name));
+            var file = fs.join(absolutePath, name);
+            if (fs.isFile(file)) {
+                return serveFile(file);
             }
         }
         return listFiles(absolutePath, uriPath);
