@@ -6,7 +6,7 @@ exports.root = "/usr/local/ringojs.org/site/";
 exports.includes = ["navigation.txt"];
 
 // list of directory index page names
-exports.welcomePages = ["index.md"];
+exports.welcomePages = ["index.html", "index.md"];
 
 // list of extensions to append to request path
 exports.defaultExtensions = [".md"];
