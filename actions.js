@@ -8,7 +8,7 @@ var log = require('ringo/logging').getLogger(module.id);
 
 var config = require("./config");
 var root = fs.canonical(config.root);
-var welcomePages = ["index.html","index.md"];
+var {welcomePages, defaultExtensions} = config;
 
 exports.index = function (req, path) {
     var uriPath = files.resolveUri(req.rootPath, path);
@@ -36,6 +36,13 @@ exports.index = function (req, path) {
             }
         }
         return listFiles(absolutePath, uriPath);
+    }
+    if (!fs.extension(uriPath) && Array.isArray(defaultExtensions)) {
+        for each (var ext in defaultExtensions) {
+            if (fs.isFile(absolutePath + ext)) {
+                return serveFile(absolutePath + ext);
+            }
+        }
     }
     throw {notfound:true};
 };

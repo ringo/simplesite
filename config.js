@@ -5,6 +5,12 @@ exports.root = "/usr/local/ringojs.org/site/";
 // includes for skin rendered markdown files
 exports.includes = ["navigation.txt"];
 
+// list of directory index page names
+exports.welcomePages = ["index.md"];
+
+// list of extensions to append to request path
+exports.defaultExtensions = [".md"];
+
 exports.urls = [
     ['/(.*)', require('./actions')],
 ];
