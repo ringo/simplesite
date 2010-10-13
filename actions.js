@@ -87,7 +87,12 @@ function serveFile(file) {
 }
 
 function renderMarkdown(file) {
-    return md.Markdown().process(fs.read(file));
+    return md.Markdown({
+        getLink: function(id) {
+            var link = this.super$getLink(id);
+            return link || ["/wiki/" + id.replace(/\s/g, "_"), "wiki link"];
+        }
+    }).process(fs.read(file));
 }
 
 function readIncludes(includes, file, context) {
