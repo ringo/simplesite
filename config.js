@@ -11,6 +11,15 @@ exports.welcomePages = ["index.html", "index.md"];
 // list of extensions to append to request path
 exports.defaultExtensions = [".md"];
 
+exports.sitemap = {
+    "/getting_started": "Getting Started",
+    "/downloads": "Downloads",
+    "/documentation": "Documentation",
+    "/screencasts": "Screencasts",
+    "/contributing": "Contributing",
+    "/code": "Code"
+}
+
 exports.urls = [
     ['/(.*)', require('./actions')],
 ];

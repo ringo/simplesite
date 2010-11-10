@@ -8,7 +8,7 @@ var log = require('ringo/logging').getLogger(module.id);
 
 var config = require("./config");
 var root = fs.canonical(config.root);
-var {welcomePages, defaultExtensions} = config;
+var {welcomePages, defaultExtensions, sitemap} = config;
 
 exports.index = function (req, path) {
     var uriPath = files.resolveUri(req.rootPath, path);
@@ -22,7 +22,7 @@ exports.index = function (req, path) {
     checkRequest(uriPath);
 
     if (fs.isFile(absolutePath)) {
-        return serveFile(absolutePath);
+        return serveFile(absolutePath, uriPath);
     }
 
     if (fs.isDirectory(absolutePath)) {
@@ -32,7 +32,7 @@ exports.index = function (req, path) {
         for each(var name in welcomePages) {
             var file = fs.join(absolutePath, name);
             if (fs.isFile(file)) {
-                return serveFile(file);
+                return serveFile(file, uriPath);
             }
         }
         return listFiles(absolutePath, uriPath);
@@ -40,7 +40,7 @@ exports.index = function (req, path) {
     if (!fs.extension(uriPath) && Array.isArray(defaultExtensions)) {
         for each (var ext in defaultExtensions) {
             if (fs.isFile(absolutePath + ext)) {
-                return serveFile(absolutePath + ext);
+                return serveFile(absolutePath + ext, uriPath);
             }
         }
     }
@@ -75,11 +75,14 @@ function listFiles(absolutePath, uriPath) {
     });
 }
 
-function serveFile(file) {
+function serveFile(file, uri) {
     if (fs.extension(file) == ".md") {
         var context = {
             content: renderMarkdown(file)
         };
+        if (sitemap && uri in sitemap) {
+            context.title = sitemap[uri];
+        }
         readIncludes(config.includes, file, context);
         return Response.skin(module.resolve('skins/page.html'), context);
     }
