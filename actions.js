@@ -1,16 +1,19 @@
-var {Response} = require('ringo/webapp/response');
+var response = require('ringo/jsgi/response');
 var fs = require('fs');
 var md = require('ringo/markdown');
 var files = require('ringo/utils/files');
 var strings = require('ringo/utils/strings');
 var numbers = require('ringo/utils/numbers');
+var dates = require('ringo/utils/dates');
 var log = require('ringo/logging').getLogger(module.id);
+var mustache = require('./mustache-commonjs');
 
 var config = require("./config");
 var root = fs.canonical(config.root);
 var {welcomePages, defaultExtensions, sitemap} = config;
 
-exports.index = function (req, path) {
+exports.index = function (req) {
+    var path = req.pathInfo;
     var uriPath = files.resolveUri(req.rootPath, path);
 
     // better be safe - make sure path is contained in root
@@ -27,7 +30,7 @@ exports.index = function (req, path) {
 
     if (fs.isDirectory(absolutePath)) {
         if (!strings.endsWith(uriPath, "/")) {
-            throw {redirect: uriPath + "/"};
+            return response.redirect(uriPath + "/");
         }
         for each(var name in welcomePages) {
             var file = fs.join(absolutePath, name);
@@ -44,7 +47,7 @@ exports.index = function (req, path) {
             }
         }
     }
-    throw {notfound:true};
+    return response.notFound(req.pathInfo);
 };
 
 function listFiles(absolutePath, uriPath) {
@@ -61,14 +64,14 @@ function listFiles(absolutePath, uriPath) {
         return {
             name:file,
             size: size,
-            lastModified: fs.lastModified(filePath),
+            lastModified: dates.format(fs.lastModified(filePath), "yyyy-MM-dd HH:mm"),
             path: files.resolveUri(uriPath, file)
         };
     });
 
     var parentDir = uriPath == "/" ? "" : "/../";
 
-    return Response.skin(module.resolve('skins/list.html'), {
+    return responseHelper('templates/list.html', {
         files: paths,
         title: uriPath,
         parent: parentDir
@@ -84,9 +87,9 @@ function serveFile(file, uri) {
             context.title = sitemap[uri];
         }
         readIncludes(config.includes, file, context);
-        return Response.skin(module.resolve('skins/page.html'), context);
+        return responseHelper('templates/page.html', context);
     }
-    return Response.static(file);
+    return response.static(file);
 }
 
 function renderMarkdown(file) {
@@ -119,3 +122,7 @@ function checkRequest(request) {
     }
 }
 
+function responseHelper(template, context) {
+    var tmp = getResource(module.resolve(template));
+    return response.html(mustache.to_html(tmp.content, context));
+}

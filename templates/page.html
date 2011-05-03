@@ -2,14 +2,11 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title><% title %></title>
-<% render head %>
+<title>{{title}}</title>
+{{{head}}}
 </head>
 <body>
-<% headline | wrap <h1> </h1> %>
-<% render content %>
+{{headline h1}}
+{{{content}}}
 </body>
 </html>
-
-<% subskin content %>
-Overwrite this subskin to add content.
