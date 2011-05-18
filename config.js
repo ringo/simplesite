@@ -12,6 +12,7 @@ exports.welcomePages = ["index.html", "index.md"];
 exports.defaultExtensions = [".md"];
 
 exports.sitemap = {
+    "/": "Home",
     "/getting_started": "Getting Started",
     "/downloads": "Downloads",
     "/documentation": "Documentation",

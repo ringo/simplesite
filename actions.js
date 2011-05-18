@@ -6,7 +6,7 @@ var strings = require('ringo/utils/strings');
 var numbers = require('ringo/utils/numbers');
 var dates = require('ringo/utils/dates');
 var log = require('ringo/logging').getLogger(module.id);
-var mustache = require('./mustache-commonjs');
+var mustache = require('ringo/mustache');
 
 var config = require("./config");
 var root = fs.canonical(config.root);
@@ -28,6 +28,8 @@ exports.index = function (req) {
         return serveFile(absolutePath, uriPath);
     }
 
+    var masterTemplate = req.env.masterTemplate || "templates/master";
+
     if (fs.isDirectory(absolutePath)) {
         if (!strings.endsWith(uriPath, "/")) {
             return response.redirect(uriPath + "/");
@@ -35,22 +37,22 @@ exports.index = function (req) {
         for each(var name in welcomePages) {
             var file = fs.join(absolutePath, name);
             if (fs.isFile(file)) {
-                return serveFile(file, uriPath);
+                return serveFile(file, uriPath, masterTemplate);
             }
         }
-        return listFiles(absolutePath, uriPath);
+        return listFiles(absolutePath, uriPath, masterTemplate);
     }
     if (!fs.extension(uriPath) && Array.isArray(defaultExtensions)) {
         for each (var ext in defaultExtensions) {
             if (fs.isFile(absolutePath + ext)) {
-                return serveFile(absolutePath + ext, uriPath);
+                return serveFile(absolutePath + ext, uriPath, masterTemplate);
             }
         }
     }
     return response.notFound(req.pathInfo);
 };
 
-function listFiles(absolutePath, uriPath) {
+function listFiles(absolutePath, uriPath, masterTemplate) {
     var paths = fs.list(absolutePath).filter(function(file) {
         return !files.isHidden(file);
     }).sort().map(function(file) {
@@ -71,14 +73,14 @@ function listFiles(absolutePath, uriPath) {
 
     var parentDir = uriPath == "/" ? "" : "/../";
 
-    return responseHelper('templates/list.html', {
+    return responseHelper('templates/list.html', masterTemplate, {
         files: paths,
         title: uriPath,
         parent: parentDir
     });
 }
 
-function serveFile(file, uri) {
+function serveFile(file, uri, masterTemplate) {
     if (fs.extension(file) == ".md") {
         var context = {
             content: renderMarkdown(file)
@@ -87,7 +89,7 @@ function serveFile(file, uri) {
             context.title = sitemap[uri];
         }
         readIncludes(config.includes, file, context);
-        return responseHelper('templates/page.html', context);
+        return responseHelper('templates/page.html', masterTemplate, context);
     }
     return response.static(file);
 }
@@ -122,7 +124,12 @@ function checkRequest(request) {
     }
 }
 
-function responseHelper(template, context) {
+function responseHelper(template, masterTemplate, context) {
     var tmp = getResource(module.resolve(template));
-    return response.html(mustache.to_html(tmp.content, context));
+    context.content = mustache.to_html(tmp.content, context);
+    if (fs.isRelative(masterTemplate)) {
+        masterTemplate = module.resolve(masterTemplate)
+    }
+    var master = getResource(masterTemplate);
+    return response.html(mustache.to_html(master.content, context));
 }
