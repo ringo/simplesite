@@ -1,6 +1,6 @@
 
 // root directory for public content - please adapt
-exports.root = "site";
+exports.root = "/usr/local/ringojs.org/site/";
 
 // includes for skin rendered markdown files
 exports.includes = ["navigation.txt"];
