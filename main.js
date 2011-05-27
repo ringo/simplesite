@@ -1,7 +1,7 @@
 //#!/usr/bin/env ringo
 
 // root directory for public content - please adapt
-exports.root = "site"; // /usr/local/ringojs.org/site/";
+exports.root = "/usr/local/ringojs.org/site/";
 
 // includes for skin rendered markdown files
 exports.includes = ["navigation.txt"];
