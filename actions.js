@@ -5,12 +5,11 @@ var files = require('ringo/utils/files');
 var strings = require('ringo/utils/strings');
 var numbers = require('ringo/utils/numbers');
 var dates = require('ringo/utils/dates');
-var log = require('ringo/logging').getLogger(module.id);
 var mustache = require('ringo/mustache');
 
-var config = require("./config");
-var root = fs.canonical(config.root);
-var {welcomePages, defaultExtensions, sitemap} = config;
+var main = require("./main");
+var root = fs.canonical(main.root);
+var {welcomePages, defaultExtensions, sitemap} = main;
 
 exports.index = function (req) {
     var path = req.pathInfo;
@@ -88,7 +87,7 @@ function serveFile(file, uri, masterTemplate) {
         if (sitemap && uri in sitemap) {
             context.title = sitemap[uri];
         }
-        readIncludes(config.includes, file, context);
+        readIncludes(main.includes, file, context);
         return responseHelper('templates/page.html', masterTemplate, context);
     }
     return response.static(file);
