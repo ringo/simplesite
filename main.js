@@ -1,7 +1,7 @@
 //#!/usr/bin/env ringo
 
 // root directory for public content - please adapt
-exports.root = "/usr/local/ringojs.org/site/";
+exports.root = "site"; // "/usr/local/ringojs.org/site/";
 
 // includes for skin rendered markdown files
 exports.includes = ["navigation.txt"];
@@ -16,10 +16,11 @@ exports.sitemap = {
     "/": "Home",
     "/getting_started": "Getting Started",
     "/downloads": "Downloads",
-    "/documentation": "Documentation",
+    "/documentation/": "Documentation",
+    "/documentation/modules": "Modules",
     "/screencasts": "Screencasts",
     "/contributing": "Contributing",
-    "/code": "Code"
+    "/code": "Code",
 }
 
 exports.app = require("./actions").index;
@@ -28,4 +29,3 @@ exports.app = require("./actions").index;
 if (require.main == module) {
     require("ringo/httpserver").main(module.directory);
 }
-
