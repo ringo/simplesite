@@ -98,6 +98,13 @@ function renderMarkdown(file) {
         getLink: function(id) {
             var link = this.super$getLink(id);
             return link || ["/wiki/" + id.replace(/\s/g, "_"), "wiki link"];
+        },
+        openTag: function(tag, buffer) {
+            buffer.append('<').append(tag);
+            if (tag == "pre") {
+                buffer.append(' class="sh_javascript"');
+            }
+            buffer.append('>');
         }
     }).process(fs.read(file));
 }
