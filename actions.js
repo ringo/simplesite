@@ -1,6 +1,6 @@
 var response = require('ringo/jsgi/response');
 var fs = require('fs');
-var md = require('ringo/markdown');
+var markdown = require('ringo/markdown');
 var files = require('ringo/utils/files');
 var strings = require('ringo/utils/strings');
 var numbers = require('ringo/utils/numbers');
@@ -94,7 +94,7 @@ function serveFile(file, uri, masterTemplate) {
 }
 
 function renderMarkdown(file) {
-    return md.Markdown({
+    return markdown.process(fs.read(file), {
         getLink: function(id) {
             var link = this.super$getLink(id);
             return link || ["/wiki/" + id.replace(/\s/g, "_"), "wiki link"];
@@ -106,7 +106,7 @@ function renderMarkdown(file) {
             }
             buffer.append('>');
         }
-    }).process(fs.read(file));
+    });
 }
 
 function readIncludes(includes, file, context) {
