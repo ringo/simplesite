@@ -32,12 +32,14 @@ try {
    system.exit(1);
 }
 
+exports.app = require("./actions").index;
+
 // main script to start application
 if (require.main == module) {
     var {Server} = require("ringo/httpserver");
     var httpServer = new Server({
         "appName": "app",
-        "appModule": module.resolve("./actions"),
+        "appModule": module.resolve('./main'),
         "port": exports.config.port || 8080
     });
     httpServer.start();

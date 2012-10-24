@@ -10,7 +10,7 @@ var mustache = require('ringo/mustache');
 var {config} = require("./main");
 var root = fs.canonical(config.root);
 
-exports.app = function (req) {
+exports.index = function (req) {
     var path = req.pathInfo;
     var uriPath = files.resolveUri(req.rootPath, path);
 
