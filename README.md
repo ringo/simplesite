@@ -4,18 +4,18 @@ to HTML on the fly.
 
 Start the application with
 
-   ringo main.js
+    ringo main.js
 
 Then point your browser to this URL:
 
-   http://localhost:8080/
+    http://localhost:8080/
 
 The default configuration will serve this application's "content" directory with
 its default templates.
 
 To serve files from a different directory use the `--contentdir` option, for example:
 
-   ringo main.js --contentdir /my/content/to/serve/
+    ringo main.js --contentdir /my/content/to/serve/
 
 Custom templates and configuration
 ------------------------------------
