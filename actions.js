@@ -7,11 +7,10 @@ var numbers = require('ringo/utils/numbers');
 var dates = require('ringo/utils/dates');
 var mustache = require('ringo/mustache');
 
-var main = require("./main");
-var root = fs.canonical(main.root);
-var {welcomePages, defaultExtensions, sitemap} = main;
+var {config} = require("./main");
+var root = fs.canonical(config.root);
 
-exports.index = function (req) {
+exports.app = function (req) {
     var path = req.pathInfo;
     var uriPath = files.resolveUri(req.rootPath, path);
 
@@ -23,17 +22,17 @@ exports.index = function (req) {
 
     checkRequest(uriPath);
 
-    if (fs.isFile(absolutePath)) {
-        return serveFile(absolutePath, uriPath);
-    }
+    var masterTemplate = req.env.masterTemplate || "templates/master.html";
 
-    var masterTemplate = req.env.masterTemplate || "templates/master";
+    if (fs.isFile(absolutePath)) {
+        return serveFile(absolutePath, uriPath, masterTemplate);
+    }
 
     if (fs.isDirectory(absolutePath)) {
         if (!strings.endsWith(uriPath, "/")) {
             return response.redirect(uriPath + "/");
         }
-        for each(var name in welcomePages) {
+        for each(var name in config.welcomePages) {
             var file = fs.join(absolutePath, name);
             if (fs.isFile(file)) {
                 return serveFile(file, uriPath, masterTemplate);
@@ -41,8 +40,8 @@ exports.index = function (req) {
         }
         return listFiles(absolutePath, uriPath, masterTemplate);
     }
-    if (!fs.extension(uriPath) && Array.isArray(defaultExtensions)) {
-        for each (var ext in defaultExtensions) {
+    if (!fs.extension(uriPath) && Array.isArray(config.defaultExtensions)) {
+        for each (var ext in config.defaultExtensions) {
             if (fs.isFile(absolutePath + ext)) {
                 return serveFile(absolutePath + ext, uriPath, masterTemplate);
             }
@@ -84,10 +83,10 @@ function serveFile(file, uri, masterTemplate) {
         var context = {
             content: renderMarkdown(file)
         };
-        if (sitemap && uri in sitemap) {
-            context.title = sitemap[uri];
+        if (config.sitemap && uri in config.sitemap) {
+            context.title = config.sitemap[uri];
         }
-        readIncludes(main.includes, file, context);
+        readIncludes(config.includes, file, context);
         return responseHelper('templates/page.html', masterTemplate, context);
     }
     return response.static(file);
@@ -131,11 +130,21 @@ function checkRequest(request) {
 }
 
 function responseHelper(template, masterTemplate, context) {
-    var tmp = getResource(module.resolve(template));
-    context.content = mustache.to_html(tmp.content, context);
-    if (fs.isRelative(masterTemplate)) {
-        masterTemplate = module.resolve(masterTemplate)
+    // for both templates: try in config.root/templates first, then
+    // relative to this module
+    var tmp = getResource(fs.resolve(config.root, 'templates', template));
+    if (!tmp.exists()) {
+        tmp = getResource(module.resolve(template));
     }
-    var master = getResource(masterTemplate);
+    context.content = mustache.to_html(tmp.content, context);
+    var master;
+    if (fs.isRelative(masterTemplate)) {
+        master = getResource(fs.resolve(config.root, 'templates', masterTemplate));
+        if (!master.exists()) {
+            master = getResource(module.resolve(masterTemplate));
+        }
+    } else {
+        master = getResource(masterTemplate);
+    }
     return response.html(mustache.to_html(master.content, context));
 }
