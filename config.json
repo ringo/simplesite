@@ -1,7 +1,7 @@
 {
    "includes": "navigation.txt",
    "welcomePages": ["index.html", "index.md"],
-   "defaultExtensions": ".md",
+   "defaultExtensions": [".md"],
    "sitemap": {
        "/": "Home",
        "/getting_started": "Getting Started",
