@@ -28,6 +28,14 @@ exports.index = function (req) {
         return serveFile(absolutePath, uriPath, masterTemplate);
     }
 
+    if (!fs.extension(uriPath) && Array.isArray(config.defaultExtensions)) {
+        for each (var ext in config.defaultExtensions) {
+            if (fs.isFile(absolutePath + ext)) {
+                return serveFile(absolutePath + ext, uriPath, masterTemplate);
+            }
+        }
+    }
+
     if (fs.isDirectory(absolutePath)) {
         if (!strings.endsWith(uriPath, "/")) {
             return response.redirect(uriPath + "/");
@@ -40,13 +48,7 @@ exports.index = function (req) {
         }
         return listFiles(absolutePath, uriPath, masterTemplate);
     }
-    if (!fs.extension(uriPath) && Array.isArray(config.defaultExtensions)) {
-        for each (var ext in config.defaultExtensions) {
-            if (fs.isFile(absolutePath + ext)) {
-                return serveFile(absolutePath + ext, uriPath, masterTemplate);
-            }
-        }
-    }
+
     return response.notFound(req.pathInfo);
 };
 
