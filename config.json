@@ -1,5 +1,5 @@
 {
-   "includes": "navigation.txt",
+   "includes": ["menu.txt"],
    "welcomePages": ["index.html", "index.md"],
    "defaultExtensions": [".md"],
    "sitemap": {
