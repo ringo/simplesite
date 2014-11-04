@@ -1,5 +1,7 @@
 {
-   "includes": ["menu.txt", "menu.md"],
+  "contentDirectory": "./content",
+  "static": "./static",
+  "includes": ["menu.txt", "menu.md"],
    "welcomePages": ["index.html", "index.md"],
    "defaultExtensions": [".md"],
    "sitemap": {
