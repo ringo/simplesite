@@ -36,6 +36,11 @@ function main(args) {
             console.err("Invalid content directory in config: " + config.contentDirectory);
             system.exit(1);
         }
+
+        if (!config.templateDirectory || !fs.exists(config.templateDirectory)) {
+            console.err("Invalid template directory in config: " + config.templateDirectory);
+            system.exit(1);
+        }
     } catch (e) {
         console.log("Error parsing config file '", configFile, "': ", e);
         system.exit(1);

@@ -11,7 +11,7 @@ var markdown = require("ringo-commonmark");
 var config = require("./main").getConfig();
 
 var templates = new Environment({
-    loader: config.templates || module.resolve("./templates")
+    loader: config.templateDirectory
 });
 
 var app = exports.app = new Application();
@@ -42,7 +42,7 @@ app.get(function(request, path) {
     log.debug("File to load: " + mdFile);
 
     if (!fs.exists(mdFile)) {
-        log.info("file not found: ", path, " - ", mdFile)
+        log.info("File not found: ", path, " - ", mdFile)
         var notFound = templates.getTemplate("notFound.html");
         return response.html(notFound.render({
             "path": path

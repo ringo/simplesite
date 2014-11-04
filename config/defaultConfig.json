@@ -1,5 +1,6 @@
 {
   "contentDirectory": "./content",
+  "templateDirectory": "./templates",
   "static": "./static",
   "welcomePage": "index.md"
 }
