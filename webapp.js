@@ -1,5 +1,4 @@
 var fs = require("fs");
-var config = require("./main").config;
 var strings = require("ringo/utils/strings");
 var response = require("ringo/jsgi/response");
 var log = require("ringo/logging").getLogger(module.id);
@@ -7,6 +6,9 @@ var log = require("ringo/logging").getLogger(module.id);
 var {Application} = require("stick");
 var {Environment} = require("reinhardt");
 var markdown = require("ringo-commonmark");
+
+// Get the config
+var config = require("./main").getConfig();
 
 var templates = new Environment({
     loader: config.templates || module.resolve("./templates")
@@ -22,7 +24,7 @@ if (config.static) {
 
 app.get(function(request, path) {
     // Check input path
-    if (path !== path.replace(/\/\/+/g, "\/")) {
+    if (path !== path.replace(/\/{2,}/g, "/")) {
         return response.bad();
     }
 
