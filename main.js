@@ -36,7 +36,7 @@ if (require.main == module) {
     var {Server} = require("ringo/httpserver");
     var httpServer = new Server({
         "appName": "app",
-        "appModule": module.resolve("./actions"),
+        "appModule": module.resolve("./webapp"),
         "port": config.port || 8080
     });
     httpServer.start();

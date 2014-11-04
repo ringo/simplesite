@@ -37,7 +37,7 @@ app.get(function(request, path) {
         mdFile = mdFile.slice(0, -1) + ".md";
     }
 
-    log.info("File to load: " + mdFile);
+    log.debug("File to load: " + mdFile);
 
     if (!fs.exists(mdFile)) {
         log.info("file not found: ", path, " - ", mdFile)
