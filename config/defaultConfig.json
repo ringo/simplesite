@@ -1,17 +1,5 @@
 {
   "contentDirectory": "./content",
   "static": "./static",
-  "includes": ["menu.txt", "menu.md"],
-   "welcomePages": ["index.html", "index.md"],
-   "defaultExtensions": [".md"],
-   "sitemap": {
-       "/": "Home",
-       "/getting_started": "Getting Started",
-       "/downloads": "Downloads",
-       "/documentation/": "Documentation",
-       "/documentation/modules": "Modules",
-       "/screencasts": "Screencasts",
-       "/contributing": "Contributing",
-       "/code": "Code"
-   }
+  "welcomePage": "index.md"
 }

@@ -27,11 +27,16 @@ app.get(function(request, path) {
     }
 
     var mdFile = fs.join(config.contentDirectory, path);
-    if (strings.endsWith(mdFile, "/")) {
-        mdFile += "index.md";
+    if (!strings.endsWith(mdFile, "/")) {
+        // Force / at the end of URLs
+        return response.redirect(path + "/");
+    } else if (path === "/") {
+        // Root = Render the index page
+        mdFile += config.welcomePage || "index.md";
     } else {
-        mdFile += ".md";
+        mdFile = mdFile.slice(0, -1) + ".md";
     }
+
     log.info("File to load: " + mdFile);
 
     if (!fs.exists(mdFile)) {
