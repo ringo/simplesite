@@ -7,8 +7,8 @@
     "maintainers": [],
     "contributors": [],
     "dependencies": {
-        "reinhardt": ">= 0.2",
-        "stick": ">= 0.3",
+        "reinhardt": ">= 0.3",
+        "stick": ">= 0.4",
         "ringo-commonmark": ">= 0.1.0"
     },
     "repositories": [{
