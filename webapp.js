@@ -48,7 +48,7 @@ app.get(function(request, path) {
     if (!fs.exists(mdFile)) {
         log.info("File not found: ", path, " - ", mdFile)
         var notFound = templates.getTemplate("notFound.html");
-        return response.html(notFound.render({
+        return response.setStatus(404).html(notFound.render({
             "path": path
         }));
     }
