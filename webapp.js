@@ -32,26 +32,29 @@ app.get(function(request, path) {
         return response.bad();
     }
 
+    var mdFile;
     var filePath = fs.join(contentDir, path);
     if (!strings.endsWith(filePath, "/")) {
         // Force / at the end of URLs
         return response.redirect(path + "/");
     } else if (path === "/") {
         // Root = Render the index page
-        filePath += config.get("welcomePage") || "index.md";
+        mdFile = config.get("welcomePage") || "index.md";
     } else {
         mdFile = filePath.slice(0, -1) + ".md";
+    }
 
-        if (!fs.exists(mdFile)) {
-            if (fs.isDirectory(filePath) && fs.exists(fs.join(filePath, "index.md"))) {
-                mdFile = fs.join(filePath, "index.md");
-            } else {
-                // 404 - File not found
-                log.info("File not found: ", path, " - ", mdFile)
-                return response.setStatus(404).html(templates.getTemplate("notFound.html").render({
-                    "path": path
-                }));
-            }
+    // Check if file can be rendered
+    if (!fs.exists(mdFile)) {
+        // Check if requested path is a directory
+        if (fs.isDirectory(filePath) && fs.exists(fs.join(filePath, "index.md"))) {
+            mdFile = fs.join(filePath, "index.md");
+        } else {
+            // 404 - File not found
+            log.info("File not found: ", path, " - ", mdFile)
+            return response.setStatus(404).html(templates.getTemplate("notFound.html").render({
+                "path": path
+            }));
         }
     }
 
