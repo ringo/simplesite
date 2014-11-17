@@ -1,5 +1,6 @@
 *.iml
 .idea/
 /packages/stick
+/packages/gestalt
 /packages/reinhardt
 /packages/ringo-commonmark

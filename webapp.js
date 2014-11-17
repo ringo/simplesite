@@ -8,19 +8,23 @@ var {Environment} = require("reinhardt");
 var markdown = require("ringo-commonmark");
 
 // Get the config
-var config = require("./main").getConfig();
+var config = require("./config");
 
 var templates = new Environment({
-    loader: config.templateDirectory
+    loader: fs.resolve(config.get("configHome"), config.get("templates"))
 });
 
 var app = exports.app = new Application();
 app.configure("static", require("reinhardt/middleware"), "params", "mount", module.resolve("./routing"));
 
-if (config.static) {
-    log.info("Mounting static dir: " + fs.absolute(config.static));
-    app.static(fs.absolute(config.static), "index.html", "/static");
+if (config.get("static")) {
+    var staticDir = fs.resolve(config.get("configHome"), config.get("static"))
+    log.info("Mounting static dir: " + fs.absolute(staticDir));
+    app.static(fs.absolute(staticDir), "index.html", "/static");
 }
+
+var contentDir = fs.resolve(config.get("configHome"), config.get("content"));
+log.info("Serving content from", contentDir);
 
 app.get(function(request, path) {
     // Check input path
@@ -28,13 +32,13 @@ app.get(function(request, path) {
         return response.bad();
     }
 
-    var mdFile = fs.join(config.contentDirectory, path);
+    var mdFile = fs.join(contentDir, path);
     if (!strings.endsWith(mdFile, "/")) {
         // Force / at the end of URLs
         return response.redirect(path + "/");
     } else if (path === "/") {
         // Root = Render the index page
-        mdFile += config.welcomePage || "index.md";
+        mdFile += config.get("welcomePage") || "index.md";
     } else {
         mdFile = mdFile.slice(0, -1) + ".md";
     }

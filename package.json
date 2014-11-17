@@ -9,7 +9,8 @@
     "dependencies": {
         "reinhardt": ">= 0.3",
         "stick": ">= 0.4",
-        "ringo-commonmark": ">= 0.1.0"
+        "ringo-commonmark": ">= 0.1.0",
+        "gestalt": ">= 0.1.1"
     },
     "repositories": [{
         "type": "git",
