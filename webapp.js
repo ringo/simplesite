@@ -32,25 +32,36 @@ app.get(function(request, path) {
         return response.bad();
     }
 
-    var mdFile = fs.join(contentDir, path);
-    if (!strings.endsWith(mdFile, "/")) {
+    var filePath = fs.join(contentDir, path);
+    if (!strings.endsWith(filePath, "/")) {
         // Force / at the end of URLs
         return response.redirect(path + "/");
     } else if (path === "/") {
         // Root = Render the index page
-        mdFile += config.get("welcomePage") || "index.md";
+        filePath += config.get("welcomePage") || "index.md";
     } else {
-        mdFile = mdFile.slice(0, -1) + ".md";
+        mdFile = filePath.slice(0, -1) + ".md";
+
+        if (!fs.exists(mdFile)) {
+            if (fs.isDirectory(filePath) && fs.exists(fs.join(filePath, "index.md"))) {
+                mdFile = fs.join(filePath, "index.md");
+            } else {
+                // 404 - File not found
+                log.info("File not found: ", path, " - ", mdFile)
+                return response.setStatus(404).html(templates.getTemplate("notFound.html").render({
+                    "path": path
+                }));
+            }
+        }
     }
 
     log.debug("File to load: " + mdFile);
 
-    if (!fs.exists(mdFile)) {
-        log.info("File not found: ", path, " - ", mdFile)
-        var notFound = templates.getTemplate("notFound.html");
-        return response.setStatus(404).html(notFound.render({
-            "path": path
-        }));
+    // Check if menu is present in the directory
+    var menu = undefined;
+    var menuFile = fs.join(fs.directory(mdFile), "__menu__.md");
+    if (fs.exists(menuFile)) {
+        menu = markdown.process(fs.read(menuFile, "r"));
     }
 
     var htmlContent = markdown.process(fs.read(mdFile, "r"));
@@ -65,6 +76,7 @@ app.get(function(request, path) {
     return response.html(template.render({
         "path": path,
         "pageTitle": pageTitle,
-        "content": htmlContent
+        "content": htmlContent,
+        "menu": menu
     }));
 });
