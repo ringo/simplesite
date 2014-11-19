@@ -16,9 +16,10 @@ var envConfig = system.env["SIMPLESITE_CONFIG"];
 
 // Load the config file
 var configHome = fs.resolve(envConfig || opts.config || module.directory);
-log.info(configHome)
+log.info("Config home: " + configHome);
+
 if (envConfig || opts.config) {
-    var customConfigFile = fs.resolve(configHome, "./config.json");
+    var customConfigFile = fs.join(configHome, "config.json");
     if (fs.exists(customConfigFile)) {
         log.info("Loading config:", customConfigFile);
         config.merge(customConfigFile);
@@ -27,10 +28,11 @@ if (envConfig || opts.config) {
     }
 }
 
-var logConfig = fs.resolve(configHome, "./log4j.properties");
+var logConfig = fs.join(configHome, "log4j.properties");
 if (!fs.exists(logConfig)) {
     logConfig = module.resolve("./config/log4j.properties");
 }
+log.info("Logging config: " + fs.absolute(logConfig));
 
 config.set("configHome", configHome);
 config.set("logging", getResource(fs.absolute(logConfig)));
