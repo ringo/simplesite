@@ -1,6 +1,8 @@
 var fs = require("fs");
+var mime = require("ringo/mime");
 var strings = require("ringo/utils/strings");
 var response = require("ringo/jsgi/response");
+var fileUtils = require("ringo/utils/files");
 var log = require("ringo/logging").getLogger(module.id);
 
 var {Application} = require("stick");
@@ -33,8 +35,12 @@ app.get(function(request, path) {
     }
 
     var mdFile;
-    var filePath = fs.join(contentDir, path);
-    if (!strings.endsWith(filePath, "/")) {
+    var filePath = fs.join(contentDir, path.replace(/\//g, fileUtils.separator));
+    if (mime.mimeType(path).indexOf("image/") === 0 && fs.exists(filePath)) {
+        return response.static(fs.absolute(filePath), mime.mimeType(path));
+    }
+
+    if (!strings.endsWith(path, "/")) {
         // Force / at the end of URLs
         return response.redirect(path + "/");
     } else if (path === "/") {
