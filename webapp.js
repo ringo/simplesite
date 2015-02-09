@@ -1,5 +1,6 @@
 var fs = require("fs");
 var mime = require("ringo/mime");
+var objects = require("ringo/utils/objects");
 var strings = require("ringo/utils/strings");
 var response = require("ringo/jsgi/response");
 var fileUtils = require("ringo/utils/files");
@@ -82,10 +83,10 @@ app.get(function(request, path) {
     }
 
     var template = templates.getTemplate("page.html");
-    return response.html(template.render({
+    return response.html(template.render(objects.merge({
         "path": path,
         "pageTitle": pageTitle,
         "content": htmlContent,
         "menu": menu
-    }));
+    }, (config.get("defaultContext") || {}))));
 });
