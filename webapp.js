@@ -8,7 +8,7 @@ var log = require("ringo/logging").getLogger(module.id);
 
 var {Application} = require("stick");
 var {Environment} = require("reinhardt");
-var markdown = require("ringo-commonmark");
+var markdown = require("commonmark");
 
 // Get the config
 var config = require("./config");
