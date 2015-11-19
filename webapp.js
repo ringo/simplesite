@@ -48,7 +48,7 @@ app.get(function(request, path) {
         // Root = Render the index page
         mdFile = config.get("welcomePage") || "index.md";
     } else {
-        mdFile = filePath.slice(0, -1) + ".md";
+        mdFile = filePath + ".md";
     }
 
     // Check if file can be rendered
