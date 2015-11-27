@@ -48,6 +48,11 @@ app.get(function(request, path) {
         // Root = Render the index page
         mdFile = config.get("welcomePage") || "index.md";
     } else {
+        // RingoJS 0.11 compatibility switch
+        // <= 0.11 keeps the trailing slash, so we need to slice()
+        if (strings.endsWith(filePath, "/")) {
+            filePath = filePath.slice(0, -1);
+        }
         mdFile = filePath + ".md";
     }
 
