@@ -21,9 +21,24 @@ var app = exports.app = new Application();
 app.configure("static", require("reinhardt/middleware"), "params", "mount", module.resolve("./routing"));
 
 if (config.get("static")) {
-    var staticDir = fs.resolve(config.get("configHome"), config.get("static"))
-    log.info("Mounting static dir: " + fs.absolute(staticDir));
-    app.static(fs.absolute(staticDir), "index.html", "/static");
+    const statics = config.get("static");
+
+    const mountStatic = function(staticConfig) {
+        const staticDir = fs.absolute(fs.resolve(config.get("configHome"), staticConfig.path));
+        log.info("Mounting static directory {} to {}", staticDir, (staticConfig.baseURI || "/static"));
+        app.static(
+            staticDir,
+            staticConfig.index || "index.html",
+            staticConfig.baseURI || "/static",
+            staticConfig.options || {}
+        );
+    };
+
+    if (Array.isArray(statics)) {
+        statics.forEach(mountStatic);
+    } else {
+        mountStatic(statics);
+    }
 }
 
 var contentDir = fs.resolve(config.get("configHome"), config.get("content"));
