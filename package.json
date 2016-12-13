@@ -1,23 +1,24 @@
 {
     "name": "simplesite",
-    "version": "1.0",
+    "version": "2.0",
     "description": "Static website publishing server.",
     "keywords": ["publishing", "markdown"],
     "homepage": "https://github.com/ringo/simplesite",
     "maintainers": [],
     "contributors": [],
     "dependencies": {
-        "reinhardt": ">= 0.3",
-        "stick": ">= 0.4",
-        "commonmark": ">= 0.1.0",
-        "gestalt": ">= 0.1.1"
+        "reinhardt": ">= 0.4",
+        "stick": ">= 0.5",
+        "commonmark": ">= 0.27.0",
+        "gestalt": ">= 0.1.1",
+        "httpserver": ">= 0.1.0"
     },
     "repositories": [{
         "type": "git",
         "url": "https://github.com/ringo/simplesite.git"
     }],
     "engines": {
-        "ringojs": ">= 0.10"
+        "ringojs": ">= 0.12"
     },
     "main": "./main.js"
 }

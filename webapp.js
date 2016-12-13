@@ -7,14 +7,14 @@ var fileUtils = require("ringo/utils/files");
 var log = require("ringo/logging").getLogger(module.id);
 
 var {Application} = require("stick");
-var {Environment} = require("reinhardt");
 var markdown = require("commonmark");
 
 // Get the config
 var config = require("./config");
 
-var templates = new Environment({
-    loader: fs.resolve(config.get("configHome"), config.get("templates"))
+const {Reinhardt} = require("reinhardt");
+const reinhardt = new Reinhardt({
+   loader: fs.resolve(config.get("configHome"), config.get("templates"))
 });
 
 var app = exports.app = new Application();
@@ -64,7 +64,7 @@ app.get(function(request, path) {
         } else {
             // 404 - File not found
             log.info("File not found: ", path, " - ", mdFile)
-            return response.setStatus(404).html(templates.getTemplate("notFound.html").render({
+            return response.setStatus(404).html(reinhardt.getTemplate("notFound.html").render({
                 "path": path
             }));
         }
@@ -87,7 +87,7 @@ app.get(function(request, path) {
         pageTitle = htmlContent.substring(4, htmlContent.indexOf("</h1>"));
     }
 
-    var template = templates.getTemplate("page.html");
+    var template = reinhardt.getTemplate("page.html");
     return response.html(template.render(objects.merge({
         "path": path,
         "pageTitle": pageTitle,

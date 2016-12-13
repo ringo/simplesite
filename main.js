@@ -2,37 +2,43 @@ var log = require("ringo/logging").getLogger(module.id);
 var engine = require("ringo/engine");
 var config = require("./config");
 
-var {Server} = require("ringo/httpserver");
+// the HTTP server itself
+const httpServer = require("httpserver");
+var server = null;
 
-var httpServer = new Server({
-    "appName": "app",
-    "appModule": module.resolve("./webapp"),
-    "port": config.get("port") || 8080
-});
-
-/**
- * Called when the application starts
- */
-var start = exports.start = function() {
-    log.info("Starting simplesite application");
-    httpServer.start();
-    // register shutdown hook to stop ftp server
-    engine.addShutdownHook(function() {
-        stop();
-    });
+const stop = exports.stop = function() {
+   if (server !== null) {
+      server.stop();
+   }
 };
 
-/**
- * Called when the engine is shut down
- */
-var stop = exports.stop = function() {
-    httpServer.stop();
-    httpServer.destroy();
-    store.connectionPool.close();
-    log.info("Stopped simplesite application");
+const start = exports.start = function() {
+   log.info("Starting application simplesite ...");
+   // configure the server
+   server = httpServer.build()
+      // serve applications
+      .serveApplication("/", module.resolve("./webapp"), {
+         "virtualHosts": config.get("server:vhosts")
+      })
+      .http({
+         "host": config.get("server:http:host"),
+         "port": config.get("server:http:port")
+      });
+
+   if (config.get("server:https:port")) {
+      server.https({
+         "host": config.get("server:https:host"),
+         "port": config.get("server:https:port"),
+         "keyStore": config.get("server:https:keyStore"),
+         "keyStorePassword": config.get("server:https:keyStorePassword"),
+         "keyManagerPassword": config.get("server:https:keyManagerPassword"),
+         "includeCipherSuites": config.get("server:https:includeCipherSuites")
+      })
+   }
+
+   server.start();
 };
 
-//Script run from command line
 if (require.main === module) {
-    start();
+   start();
 }
