@@ -1,10 +1,10 @@
-var log = require("ringo/logging").getLogger(module.id);
-var engine = require("ringo/engine");
-var config = require("./config");
+const log = require("ringo/logging").getLogger(module.id);
+const engine = require("ringo/engine");
+const config = require("./config");
 
 // the HTTP server itself
 const httpServer = require("httpserver");
-var server = null;
+let server = null;
 
 const stop = exports.stop = function() {
    if (server !== null) {
@@ -12,8 +12,8 @@ const stop = exports.stop = function() {
    }
 };
 
-const start = exports.start = function() {
-   log.info("Starting application simplesite ...");
+const init = exports.init = function() {
+   log.info("Configuring the httpserver ...");
    // configure the server
    server = httpServer.build()
       // serve applications
@@ -35,10 +35,14 @@ const start = exports.start = function() {
          "includeCipherSuites": config.get("server:https:includeCipherSuites")
       })
    }
+};
 
+const start = exports.start = function() {
+   log.info("Starting application simplesite ...");
    server.start();
 };
 
 if (require.main === module) {
+   init();
    start();
 }
