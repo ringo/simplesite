@@ -16,9 +16,8 @@ const init = exports.init = function() {
    log.info("Configuring the httpserver ...");
    // configure the server
    server = httpServer.build()
-      // serve applications
       .serveApplication("/", module.resolve("./webapp"), {
-         "virtualHosts": config.get("server:vhosts")
+      "virtualHosts": config.get("server:vhosts")
       })
       .http({
          "host": config.get("server:http:host"),
@@ -35,14 +34,11 @@ const init = exports.init = function() {
          "includeCipherSuites": config.get("server:https:includeCipherSuites")
       })
    }
-};
 
-const start = exports.start = function() {
    log.info("Starting application simplesite ...");
    server.start();
 };
 
 if (require.main === module) {
    init();
-   start();
 }
