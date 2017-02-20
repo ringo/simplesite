@@ -11,14 +11,14 @@
         "stick": ">= 0.5",
         "commonmark": ">= 0.27.0",
         "gestalt": ">= 0.1.1",
-        "httpserver": ">= 0.1.0"
+        "httpserver": ">= 0.2.0"
     },
     "repositories": [{
         "type": "git",
         "url": "https://github.com/ringo/simplesite.git"
     }],
     "engines": {
-        "ringojs": ">= 0.12"
+        "ringojs": ">= 1.1.0"
     },
     "main": "./main.js"
 }
